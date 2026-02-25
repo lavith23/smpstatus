@@ -1,4 +1,4 @@
-body {
+body{
 margin:0;
 font-family:'Orbitron',sans-serif;
 height:100vh;
@@ -7,61 +7,62 @@ color:white;
 display:flex;
 justify-content:center;
 align-items:center;
+background:black;
 }
 
-.background {
+.background{
 position:fixed;
 width:100%;
 height:100%;
 background: radial-gradient(circle at top, #1a1a40, #000);
 overflow:hidden;
+z-index:-1;
 }
 
-.background::after {
+.background::after{
 content:"";
 position:absolute;
 width:200%;
 height:200%;
-background: repeating-radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 2px);
+background: repeating-radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 2px);
 animation: stars 60s linear infinite;
 }
 
-@keyframes stars {
-from { transform: translateY(0); }
-to { transform: translateY(-1000px); }
+@keyframes stars{
+from{transform:translateY(0);}
+to{transform:translateY(-1000px);}
 }
 
-.card {
-position:relative;
+.card{
 background:rgba(255,255,255,0.05);
 backdrop-filter:blur(15px);
 padding:30px;
 border-radius:25px;
-width:380px;
+width:400px;
 text-align:center;
 box-shadow:0 0 30px #00f0ff;
 animation: rgbGlow 5s infinite alternate;
 }
 
-@keyframes rgbGlow {
-0% { box-shadow:0 0 20px #00f0ff; }
-50% { box-shadow:0 0 40px #ff00ff; }
-100% { box-shadow:0 0 20px #00ff88; }
+@keyframes rgbGlow{
+0%{box-shadow:0 0 20px #00f0ff;}
+50%{box-shadow:0 0 40px #ff00ff;}
+100%{box-shadow:0 0 20px #00ff88;}
 }
 
-.status {
+.status{
 font-size:20px;
 margin:10px 0;
 }
 
-.online { color:#00ff88; }
-.offline { color:#ff4444; }
+.online{color:#00ff88;}
+.offline{color:#ff4444;}
 
-.stats {
+.stats{
 margin:15px 0;
 }
 
-.gauge {
+.gauge{
 height:12px;
 background:#222;
 border-radius:20px;
@@ -69,14 +70,21 @@ overflow:hidden;
 margin:10px 0;
 }
 
-.gauge-fill {
+.gauge-fill{
 height:100%;
 width:0%;
 background:linear-gradient(90deg, green, yellow, red);
 transition:0.5s;
 }
 
-.buttons button {
+canvas{
+margin-top:15px;
+background:rgba(0,0,0,0.3);
+border-radius:15px;
+padding:10px;
+}
+
+.buttons button{
 margin:8px;
 padding:10px 15px;
 border:none;
@@ -86,12 +94,12 @@ font-weight:bold;
 transition:0.3s;
 }
 
-.join {
+.join{
 background:linear-gradient(45deg,#00ff88,#00ccff);
 color:black;
 }
 
-button:hover {
+button:hover{
 transform:scale(1.1);
 }
 
@@ -99,4 +107,4 @@ transform:scale(1.1);
 .card{
 width:90%;
 }
-}
+  }
