@@ -1,51 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lavith SMP Status</title>
+<title>Lavith SMP Dashboard</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="background"></div>
+<div class="container">
 
-<div class="card">
-    <h1>🔥 Lavith SMP 🔥</h1>
+<h1>🚀 Lavith SMP</h1>
 
-    <div id="status" class="status">Checking...</div>
-
-    <div class="stats">
-        <div>👥 Players: <span id="players">0</span></div>
-        <div>📶 Ping: <span id="ping">0</span> ms</div>
-    </div>
-
-    <div class="gauge">
-        <div id="gaugeFill" class="gauge-fill"></div>
-    </div>
-
-    <!-- GRAPH -->
-    <canvas id="pingChart" height="120"></canvas>
-
-    <div class="uptime">⏱ Uptime: <span id="uptime">0s</span></div>
-
-    <div class="buttons">
-        <button onclick="joinServer()" class="join">JOIN NOW</button>
-        <button onclick="copyIP()">Copy IP</button>
-        <button onclick="copyPort()">Copy Port</button>
-    </div>
+<div id="statusBox" class="status-box loading">
+<div id="statusText">Checking Server...</div>
 </div>
 
-<audio id="onlineSound">
-<source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg">
-</audio>
+<div class="info-grid">
+
+<div class="info-card">
+<h3>👥 Players</h3>
+<p id="players">0 / 0</p>
+</div>
+
+<div class="info-card">
+<h3>📶 Ping</h3>
+<p id="ping">0 ms</p>
+</div>
+
+<div class="info-card">
+<h3>🧩 Version</h3>
+<p id="version">-</p>
+</div>
+
+<div class="info-card">
+<h3>📜 MOTD</h3>
+<p id="motd">-</p>
+</div>
+
+</div>
+
+<div class="player-list">
+<h3>🧑 Online Players</h3>
+<ul id="playerNames">
+<li>No players</li>
+</ul>
+</div>
+
+<button onclick="fetchStatus()" class="refresh">🔄 Refresh</button>
+
+</div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
