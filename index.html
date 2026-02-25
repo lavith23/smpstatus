@@ -1,62 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Lavith Server Status</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .card {
-      background: #020617;
-      padding: 25px;
-      border-radius: 12px;
-      width: 320px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
-    }
-    .online { color: #22c55e; }
-    .offline { color: #ef4444; }
-  </style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My SMP Status</title>
+
+<style>
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* RGB Glow Animation */
+@keyframes glow {
+    0% { box-shadow: 0 0 10px #ff0000; }
+    50% { box-shadow: 0 0 20px #00ffcc; }
+    100% { box-shadow: 0 0 10px #ff0000; }
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 18px;
+    width: 90%;
+    max-width: 380px;
+    text-align: center;
+    color: white;
+    animation: glow 3s infinite;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+.join-btn {
+    background: #22c55e;
+    color: white;
+}
+
+.copy-btn {
+    background: #3b82f6;
+    color: white;
+}
+
+.online { color: #22c55e; font-weight: bold; }
+.offline { color: #ef4444; font-weight: bold; }
+
+.ping-good { color: #22c55e; }
+.ping-medium { color: #facc15; }
+.ping-bad { color: #ef4444; }
+
+#playerlist {
+    margin-top: 10px;
+    font-size: 14px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+</style>
 </head>
 <body>
 
-<a href="minecraft://?addExternalServer=LavithServer|output-pdt.gl.at.ply.gg:7855"
-   style="display:block;margin-top:15px;padding:10px;
-   background:#22c55e;color:black;text-align:center;
-   border-radius:8px;text-decoration:none;">
-  JOIN SERVER
-</a>
-
-
 <div class="card">
-  <h2>🟩 Lavith Bedrock Server</h2>
-  <p>Status: <span id="status">Loading...</span></p>
-  <p>Players: <span id="players">-</span></p>
-  <p>IP: output-pdt.gl.at.ply.gg</p>
-  <p>Port: 7855</p>
+    <h2>🔥 My SMP Server</h2>
+    <p id="status">Checking...</p>
+    <p id="players"></p>
+    <p id="ping"></p>
+    <p id="playerlist"></p>
+
+    <button class="join-btn" onclick="copyJoin()">🎮 Join Now</button>
+    <button class="copy-btn" onclick="copyIP()">📋 Copy IP</button>
+    <button class="copy-btn" onclick="copyPort()">📋 Copy Port</button>
 </div>
 
 <script>
-fetch("https://api.mcsrvstat.us/bedrock/3/output-pdt.gl.at.ply.gg:7855")
-  .then(res => res.json())
-  .then(data => {
-    if (data.online) {
-      document.getElementById("status").innerHTML =
-        '<span class="online">ONLINE</span>';
-      document.getElementById("players").innerText =
-        data.players.online + " / " + data.players.max;
+
+const SERVER_IP = "output-pdt.gl.at.ply.gg";
+const SERVER_PORT = "7855";
+
+function copyIP(){
+    navigator.clipboard.writeText(SERVER_IP);
+    alert("IP Copied!");
+}
+
+function copyPort(){
+    navigator.clipboard.writeText(SERVER_PORT);
+    alert("Port Copied!");
+}
+
+function copyJoin(){
+    navigator.clipboard.writeText(SERVER_IP + ":" + SERVER_PORT);
+    alert("Server Address Copied! Paste in Minecraft.");
+}
+
+function checkServer() {
+fetch(`https://api.mcstatus.io/v2/status/bedrock/${SERVER_IP}:${SERVER_PORT}`)
+.then(res => res.json())
+.then(data => {
+
+    if(data.online){
+
+        document.getElementById("status").innerHTML =
+        '<span class="online">🟢 Server Online</span>';
+
+        document.getElementById("players").innerHTML =
+        "🎮 Players: " + data.players.online + " / " + data.players.max;
+
+        let ping = data.latency;
+        let pingClass = "ping-good";
+
+        if(ping > 80) pingClass = "ping-medium";
+        if(ping > 150) pingClass = "ping-bad";
+
+        document.getElementById("ping").innerHTML =
+        '📶 Ping: <span class="'+pingClass+'">'+ ping +' ms</span>';
+
+        if(data.players.list && data.players.list.length > 0){
+            document.getElementById("playerlist").innerHTML =
+            "👥 Online Players:<br>" + data.players.list.join("<br>");
+        } else {
+            document.getElementById("playerlist").innerHTML =
+            "👥 No player names available";
+        }
+
     } else {
-      document.getElementById("status").innerHTML =
-        '<span class="offline">OFFLINE</span>';
-      document.getElementById("players").innerText = "0";
+
+        document.getElementById("status").innerHTML =
+        '<span class="offline">🔴 Server Offline</span>';
+
+        document.getElementById("players").innerHTML = "";
+        document.getElementById("ping").innerHTML = "";
+        document.getElementById("playerlist").innerHTML = "";
     }
-  });
+
+})
+.catch(() => {
+    document.getElementById("status").innerHTML =
+    "⚠️ Error checking server";
+});
+}
+
+checkServer();
+setInterval(checkServer, 30000);
+
 </script>
 
 </body>
