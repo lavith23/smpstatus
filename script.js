@@ -1,110 +1,107 @@
-body{
-margin:0;
-font-family:'Orbitron',sans-serif;
-height:100vh;
-overflow:hidden;
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-background:black;
+const ip = "output-pdt.gl.at.ply.gg";
+const port = "7855";
+
+let startTime = Date.now();
+let wasOnline = false;
+
+const ctx = document.getElementById('pingChart').getContext('2d');
+
+let pingData = [];
+let labels = [];
+
+const pingChart = new Chart(ctx, {
+type: 'line',
+data: {
+labels: labels,
+datasets: [{
+label: 'Ping',
+data: pingData,
+borderColor: '#00ffcc',
+backgroundColor: 'rgba(0,255,200,0.2)',
+tension: 0.4,
+fill: true
+}]
+},
+options: {
+responsive: true,
+plugins: { legend: { display: false } },
+scales: {
+x: { display: false },
+y: {
+beginAtZero: true,
+ticks: { color: 'white' }
+}
+}
+}
+});
+
+async function fetchStatus(){
+try{
+let res = await fetch(`https://api.mcsrvstat.us/bedrock/2/${ip}:${port}`);
+let data = await res.json();
+
+if(data.online){
+
+document.getElementById("status").innerHTML="🟢 Server Online";
+document.getElementById("status").className="status online";
+document.getElementById("players").innerText=data.players.online+" / "+data.players.max;
+
+let ping=data.debug.ping || 0;
+document.getElementById("ping").innerText=ping;
+
+let percent=Math.min(ping,200)/2;
+document.getElementById("gaugeFill").style.width=percent+"%";
+
+addPingData(ping);
+
+if(!wasOnline){
+document.getElementById("onlineSound").play();
+}
+wasOnline=true;
+
+}else{
+document.getElementById("status").innerHTML="🔴 Server Offline";
+document.getElementById("status").className="status offline";
+wasOnline=false;
 }
 
-.background{
-position:fixed;
-width:100%;
-height:100%;
-background: radial-gradient(circle at top, #1a1a40, #000);
-overflow:hidden;
-z-index:-1;
+}catch{
+document.getElementById("status").innerHTML="Error Fetching";
+}
 }
 
-.background::after{
-content:"";
-position:absolute;
-width:200%;
-height:200%;
-background: repeating-radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 2px);
-animation: stars 60s linear infinite;
+function addPingData(ping){
+let time = new Date().toLocaleTimeString();
+
+if(pingData.length > 10){
+pingData.shift();
+labels.shift();
 }
 
-@keyframes stars{
-from{transform:translateY(0);}
-to{transform:translateY(-1000px);}
+pingData.push(ping);
+labels.push(time);
+pingChart.update();
 }
 
-.card{
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(15px);
-padding:30px;
-border-radius:25px;
-width:400px;
-text-align:center;
-box-shadow:0 0 30px #00f0ff;
-animation: rgbGlow 5s infinite alternate;
+function joinServer(){
+window.location.href=`minecraft://?addExternalServer=LavithSMP|${ip}:${port}`;
 }
 
-@keyframes rgbGlow{
-0%{box-shadow:0 0 20px #00f0ff;}
-50%{box-shadow:0 0 40px #ff00ff;}
-100%{box-shadow:0 0 20px #00ff88;}
+function copyIP(){
+navigator.clipboard.writeText(ip);
+alert("IP Copied!");
 }
 
-.status{
-font-size:20px;
-margin:10px 0;
+function copyPort(){
+navigator.clipboard.writeText(port);
+alert("Port Copied!");
 }
 
-.online{color:#00ff88;}
-.offline{color:#ff4444;}
-
-.stats{
-margin:15px 0;
+function updateUptime(){
+let seconds=Math.floor((Date.now()-startTime)/1000);
+document.getElementById("uptime").innerText=seconds+"s";
 }
 
-.gauge{
-height:12px;
-background:#222;
-border-radius:20px;
-overflow:hidden;
-margin:10px 0;
-}
-
-.gauge-fill{
-height:100%;
-width:0%;
-background:linear-gradient(90deg, green, yellow, red);
-transition:0.5s;
-}
-
-canvas{
-margin-top:15px;
-background:rgba(0,0,0,0.3);
-border-radius:15px;
-padding:10px;
-}
-
-.buttons button{
-margin:8px;
-padding:10px 15px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold;
-transition:0.3s;
-}
-
-.join{
-background:linear-gradient(45deg,#00ff88,#00ccff);
-color:black;
-}
-
-button:hover{
-transform:scale(1.1);
-}
-
-@media(max-width:450px){
-.card{
-width:90%;
-}
-  }
+setInterval(fetchStatus,5000);
+setInterval(updateUptime,1000);
+fetchStatus();
