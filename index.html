@@ -1,191 +1,181 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My SMP Server</title>
+<title>Lavith SMP Status</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #1e293b);
-    background-size: 400% 400%;
-    animation: gradientBG 10s ease infinite;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+body{
+margin:0;
+font-family:'Orbitron',sans-serif;
+background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+overflow:hidden;
 }
 
-@keyframes gradientBG {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
+.card{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(15px);
+border-radius:25px;
+padding:30px;
+width:350px;
+box-shadow:0 0 30px #00ffcc;
+text-align:center;
+animation:glow 3s infinite alternate;
 }
 
-.card {
-    backdrop-filter: blur(15px);
-    background: rgba(255,255,255,0.05);
-    border-radius: 20px;
-    padding: 25px;
-    width: 90%;
-    max-width: 400px;
-    color: white;
-    text-align: center;
-    box-shadow: 0 0 30px rgba(0,0,0,0.6);
-    animation: fadeIn 1s ease;
+@keyframes glow{
+from{box-shadow:0 0 20px #00ffcc;}
+to{box-shadow:0 0 40px #ff00ff;}
 }
 
-@keyframes fadeIn {
-    from {opacity:0; transform: translateY(20px);}
-    to {opacity:1; transform: translateY(0);}
+.status{
+font-size:22px;
+margin:15px 0;
 }
 
-.status-dot {
-    height: 12px;
-    width: 12px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 5px;
+.online{color:#00ff88;}
+.offline{color:red;}
+
+.button{
+margin-top:15px;
+padding:12px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-weight:bold;
+font-size:16px;
+transition:0.3s;
 }
 
-.online-dot { background: #22c55e; animation: pulse 1s infinite; }
-.offline-dot { background: #ef4444; }
-
-@keyframes pulse {
-    0% {box-shadow: 0 0 5px #22c55e;}
-    50% {box-shadow: 0 0 15px #22c55e;}
-    100% {box-shadow: 0 0 5px #22c55e;}
+.join{
+background:linear-gradient(45deg,#00ff88,#00ccff);
+color:black;
 }
 
-button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
+.copy{
+background:#222;
+color:white;
 }
 
-button:hover { transform: scale(1.05); }
-
-.join-btn { background: #22c55e; color: white; }
-.copy-btn { background: #3b82f6; color: white; }
-
-.ping-bar {
-    height: 8px;
-    background: #334155;
-    border-radius: 5px;
-    margin-top: 5px;
-    overflow: hidden;
+.button:hover{
+transform:scale(1.05);
 }
 
-.ping-fill {
-    height: 100%;
-    width: 0%;
-    transition: width 0.5s;
+.ping-meter{
+margin:10px 0;
+height:10px;
+background:#333;
+border-radius:10px;
+overflow:hidden;
 }
 
-.toast {
-    position: fixed;
-    bottom: 20px;
-    background: #22c55e;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    display: none;
+.ping-fill{
+height:100%;
+background:linear-gradient(90deg,green,yellow,red);
+width:0%;
+transition:0.5s;
+}
+
+.small{
+font-size:13px;
+opacity:0.7;
 }
 </style>
 </head>
+
 <body>
 
 <div class="card">
-    <h2>🔥 LAVITH'S SMP</h2>
-    <p id="status">Checking...</p>
-    <p id="players"></p>
-    <p id="pingText"></p>
-    <div class="ping-bar"><div class="ping-fill" id="pingBar"></div></div>
-    <p id="playerlist"></p>
+<h2>🔥 Lavith SMP 🔥</h2>
 
-    <button class="join-btn" onclick="copyJoin()">🎮 Join Now</button>
-    <button class="copy-btn" onclick="copyIP()">📋 Copy IP</button>
-    <button class="copy-btn" onclick="copyPort()">📋 Copy Port</button>
+<div id="status" class="status">Checking...</div>
+
+<div>Players: <span id="players">0</span></div>
+<div>Ping: <span id="ping">0</span> ms</div>
+
+<div class="ping-meter">
+<div id="pingFill" class="ping-fill"></div>
 </div>
 
-<div class="toast" id="toast">Copied!</div>
+<div class="small">Uptime: <span id="uptime">0s</span></div>
 
-<audio id="onlineSound" src="https://www.myinstants.com/media/sounds/minecraft-level-up.mp3"></audio>
+<button class="button join" onclick="joinServer()">JOIN NOW</button>
+<button class="button copy" onclick="copyIP()">Copy IP</button>
+<button class="button copy" onclick="copyPort()">Copy Port</button>
+
+</div>
+
+<audio id="onlineSound">
+<source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg">
+</audio>
 
 <script>
-
-const SERVER_IP = "output-pdt.gl.at.ply.gg";
-const SERVER_PORT = "7855";
+const ip = "output-pdt.gl.at.ply.gg";
+const port = "7855";
+let startTime = Date.now();
 let wasOnline = false;
 
-function showToast(msg){
-    const toast = document.getElementById("toast");
-    toast.innerText = msg;
-    toast.style.display = "block";
-    setTimeout(()=> toast.style.display="none",2000);
+async function fetchStatus(){
+try{
+let res = await fetch(`https://api.mcsrvstat.us/bedrock/2/${ip}:${port}`);
+let data = await res.json();
+
+if(data.online){
+document.getElementById("status").innerHTML="🟢 Server Online";
+document.getElementById("status").className="status online";
+document.getElementById("players").innerText=data.players.online + " / " + data.players.max;
+document.getElementById("ping").innerText=data.debug.ping || 0;
+
+let pingValue=data.debug.ping || 0;
+let percent=Math.min(pingValue,200)/2;
+document.getElementById("pingFill").style.width=percent+"%";
+
+if(!wasOnline){
+document.getElementById("onlineSound").play();
+}
+wasOnline=true;
+
+}else{
+document.getElementById("status").innerHTML="🔴 Server Offline";
+document.getElementById("status").className="status offline";
+wasOnline=false;
 }
 
-function copyIP(){ navigator.clipboard.writeText(SERVER_IP); showToast("IP Copied!"); }
-function copyPort(){ navigator.clipboard.writeText(SERVER_PORT); showToast("Port Copied!"); }
-function copyJoin(){ navigator.clipboard.writeText(SERVER_IP+":"+SERVER_PORT); showToast("Address Copied!"); }
-
-function checkServer() {
-fetch(`https://api.mcstatus.io/v2/status/bedrock/${SERVER_IP}:${SERVER_PORT}`)
-.then(res => res.json())
-.then(data => {
-
-    if(data.online){
-
-        document.getElementById("status").innerHTML =
-        '<span class="status-dot online-dot"></span> Server Online';
-
-        document.getElementById("players").innerHTML =
-        "🎮 Players: "+data.players.online+" / "+data.players.max;
-
-        let ping = data.latency;
-        document.getElementById("pingText").innerHTML = "📶 Ping: "+ping+" ms";
-
-        let pingPercent = Math.min(ping,200)/2;
-        document.getElementById("pingBar").style.width = pingPercent+"%";
-        document.getElementById("pingBar").style.background =
-            ping < 80 ? "#22c55e" : ping < 150 ? "#facc15" : "#ef4444";
-
-        if(data.players.list && data.players.list.length>0){
-            document.getElementById("playerlist").innerHTML =
-            "👥 Online:<br>"+data.players.list.join("<br>");
-        } else {
-            document.getElementById("playerlist").innerHTML = "";
-        }
-
-        if(!wasOnline){
-            document.getElementById("onlineSound").play();
-            wasOnline = true;
-        }
-
-    } else {
-
-        document.getElementById("status").innerHTML =
-        '<span class="status-dot offline-dot"></span> Server Offline';
-
-        document.getElementById("players").innerHTML="";
-        document.getElementById("pingText").innerHTML="";
-        document.getElementById("pingBar").style.width="0%";
-        document.getElementById("playerlist").innerHTML="";
-        wasOnline=false;
-    }
-
-});
+}catch{
+document.getElementById("status").innerHTML="Error fetching";
+}
 }
 
-checkServer();
-setInterval(checkServer,30000);
+function joinServer(){
+window.location.href=`minecraft://?addExternalServer=LavithSMP|${ip}:${port}`;
+}
 
+function copyIP(){
+navigator.clipboard.writeText(ip);
+alert("IP Copied!");
+}
+
+function copyPort(){
+navigator.clipboard.writeText(port);
+alert("Port Copied!");
+}
+
+function updateUptime(){
+let seconds=Math.floor((Date.now()-startTime)/1000);
+document.getElementById("uptime").innerText=seconds+"s";
+}
+
+setInterval(fetchStatus,5000);
+setInterval(updateUptime,1000);
+fetchStatus();
 </script>
 
 </body>
